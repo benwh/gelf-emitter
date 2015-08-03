@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="5" packages="com.benwh.test.gelfemitter">
+	<Properties>
+		<Property name="APPLICATION_NAME">GelfEmitterTest</Property>
+		<Property name="LOG_PATTERN">[%d{yyyy-MM-dd HH:mm:ss.SSS}] log4j2%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
+	</Properties>
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT" follow="true">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+		</Console>
+		<Socket name="Graylog" protocol="udp" host="localhost" port="12202">
+			<GelfLayoutOa host="ubuntu-vm-1404" compressionType="GZIP">
+				<KeyValuePair key="testField1" value="%C %T" />
+				<KeyValuePair key="testField2" value="${LOG_PATTERN}" />
+				<KeyValuePair key="testField3" value="${%C}" />
+				<KeyValuePair key="testField4" value="${PID}" />
+				<KeyValuePair key="applicationName" value="${APPLICATION_NAME}" />
+			</GelfLayoutOa>
+		</Socket>
+	</Appenders>
+	<Loggers>
+		<Logger name="com.benwh.test.gelfemitter.GelfEmitterApplication" level="warn" />
+
+		<Root level="info">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="Graylog" level="warn"/>
+		</Root>
+	</Loggers>
+</Configuration>
